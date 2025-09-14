@@ -1,8 +1,55 @@
-[gd_scene load_steps=2 format=3 uid="uid://clim3jim0shlo"]
+[gd_scene load_steps=7 format=3 uid="uid://clim3jim0shlo"]
 
+[ext_resource type="Script" path="res://scripts/texture_manager.gd" id="1_7avxd"]
 [ext_resource type="Script" path="res://scripts/request_manager.gd" id="1_knv1e"]
+[ext_resource type="PackedScene" uid="uid://dx3nd4e0xsf8x" path="res://scenes/player.tscn" id="2_ldd1p"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_3xevv"]
+sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+ground_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
+
+[sub_resource type="Sky" id="Sky_l5by6"]
+sky_material = SubResource("ProceduralSkyMaterial_3xevv")
+
+[sub_resource type="Environment" id="Environment_s6so0"]
+background_mode = 2
+sky = SubResource("Sky_l5by6")
+tonemap_mode = 2
+glow_enabled = true
 
 [node name="Main" type="Node"]
 
-[node name="RequestManager" type="Node" parent="."]
+[node name="TextureManager" type="Node" parent="." node_paths=PackedStringArray("image_container", "request_manager")]
+script = ExtResource("1_7avxd")
+image_container = NodePath("../World/Images")
+request_manager = NodePath("../RequestManager")
+
+[node name="RequestManager" type="Node" parent="." node_paths=PackedStringArray("texture_manager")]
 script = ExtResource("1_knv1e")
+texture_manager = NodePath("../TextureManager")
+
+[node name="World" type="Node3D" parent="."]
+
+[node name="Images" type="Node3D" parent="World"]
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="World"]
+transform = Transform3D(-0.866025, -0.433013, 0.25, 0, 0.5, 0.866025, -0.5, 0.75, -0.433013, 0, 0, 0)
+shadow_enabled = true
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="World"]
+environment = SubResource("Environment_s6so0")
+
+[node name="CSGBox3D" type="CSGBox3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.3396, 0)
+use_collision = true
+size = Vector3(100, 0.1, 100)
+
+[node name="CSGBox3D2" type="CSGBox3D" parent="World"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.319441, -3.18331)
+
+[node name="Player" parent="World" instance=ExtResource("2_ldd1p")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.13178, 0)
+
+[connection signal="create_page_dict" from="RequestManager" to="TextureManager" method="_on_request_manager_create_page_dict"]
+[connection signal="fnished_page" from="RequestManager" to="TextureManager" method="_on_request_manager_fnished_page"]
+[connection signal="texture_created" from="RequestManager" to="TextureManager" method="_on_request_manager_texture_created"]
