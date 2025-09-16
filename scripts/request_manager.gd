@@ -1,9 +1,11 @@
 extends Node
 class_name RequestManager
 
+@export var auto_start:bool = false
+
 signal texture_created(texture:ImageTexture)
-signal fnished_page(next_page:String)
-signal create_page_dict(page:String)
+signal fnished_page(page:String,page_number:int,next_nage:String,)
+signal create_page_dict(page:String,page_number:int)
 
 var api_request:HTTPRequest
 var image_request:HTTPRequest
@@ -23,11 +25,12 @@ func _ready():
 	add_child(image_request,true)
 	image_request.request_completed.connect(self._image_request_completed)
 	
-	# does a api call to get all artworks at page 1
-	var error = api_request.request("https://api.artic.edu/api/v1/artworks?page=1")
+	if auto_start:
+		# does a api call to get all artworks at page 1
+		var error = api_request.request("https://api.artic.edu/api/v1/artworks?page=1")
 
-	if error != OK:
-		push_error("An error occurred in the HTTP request.")
+		if error != OK:
+			push_error("An error occurred in the HTTP request.")
 
 # Called when the HTTP request is completed.
 func _api_request_completed(result, response_code, headers, body):
@@ -37,7 +40,7 @@ func _api_request_completed(result, response_code, headers, body):
 	var response = json.get_data()
 	
 	var page_url = str("https://api.artic.edu/api/v1/artworks?","page=",response.pagination.current_page)
-	create_page_dict.emit(page_url)
+	create_page_dict.emit(page_url,response.pagination.current_page)
 	
 	for image in response.data: ## the images
 		print("image ",image.id)
@@ -50,7 +53,8 @@ func _api_request_completed(result, response_code, headers, body):
 			await image_request.request_completed
 			
 	var page_2_url = response.pagination.next_url
-	fnished_page.emit(page_2_url)
+	
+	fnished_page.emit(page_url,response.pagination.current_page,page_2_url)
 
 func _image_request_completed(result,response_code,headers,body):
 	if result != HTTPRequest.RESULT_SUCCESS:

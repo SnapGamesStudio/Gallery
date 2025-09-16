@@ -1,8 +1,12 @@
 extends Node
+class_name TextureManager
 
 @export var image_container:Node3D
 @export var request_manager:RequestManager
 
+
+
+var current_page_number:int
 var current_page:String
 var last_pos:Vector3 = Vector3(0,1,0)
 var images:Dictionary ## saves the images so we dont need to regen the textures
@@ -11,32 +15,32 @@ func _ready() -> void:
 	pass
 
 func _on_request_manager_texture_created(texture: ImageTexture) -> void:
-	var material := StandardMaterial3D.new()
-	material.albedo_texture = texture
-	material.cull_mode = BaseMaterial3D.CULL_DISABLED
 	
-	var meshinstance := MeshInstance3D.new()
-	meshinstance.mesh = QuadMesh.new()
-	meshinstance.material_override = material
-	meshinstance.position = last_pos + Vector3(1,0,0)
-	last_pos += Vector3(1,0,0)
-	
-	image_container.add_child(meshinstance)
-	
-	images[current_page].images[meshinstance.position] = {
-		"texture":texture
+	images[current_page].images[last_pos + Vector3(1,0,0) ] = {
+		"texture":texture,
 	}
 	
-func _on_request_manager_fnished_page(next_page: String) -> void:
+	last_pos += Vector3(1,0,0) 
+	
+	#var a = AABB(Vector3(0,0,0),Vector3(0,0,0))
+	#a = a.expand(last_pos + Vector3(0.2,0.2,0.2))
+	#print(a)
+	images[current_page].aabb = images[current_page].aabb.expand(last_pos + Vector3(0.5,0.5,0.5))
+	
+func _on_request_manager_fnished_page(page: String,page_number:int,next_page:String) -> void:
+	$"../WorldManager".gen_room(current_page,page_number)
 	print(next_page)
 	
 	## starts a new page
-	#request_manager.create_api_request(next_page)
+	if page_number == 1:
+		request_manager.create_api_request(next_page)
 
 
-func _on_request_manager_create_page_dict(page: String) -> void:
+func _on_request_manager_create_page_dict(page: String, page_number: int) -> void:
 	current_page = page
+	current_page_number = page_number
 	
 	images[page] = {
-		"images":{}
+		"images":{},
+		"aabb":AABB()
 	}
