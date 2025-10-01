@@ -1,5 +1,7 @@
 extends CharacterBody3D
 
+var paused:bool = false
+
 var speed
 const WALK_SPEED = 5.0
 const SPRINT_SPEED = 8.0
@@ -18,6 +20,7 @@ const FOV_CHANGE = 1.5
 # Get the gravity from the project settings to be synced with RigidBody nodes.
 var gravity = 9.8
 
+@onready var raycast: RayCast3D = $Head/Camera3D/RayCast3D
 @onready var head = $Head
 @onready var camera = $Head/Camera3D
 
@@ -27,14 +30,35 @@ func _ready():
 
 
 func _unhandled_input(event):
+	if paused: return
+	
 	if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 		if event is InputEventMouseMotion:
 			head.rotate_y(-event.relative.x * SENSITIVITY)
 			camera.rotate_x(-event.relative.y * SENSITIVITY)
 			camera.rotation.x = clamp(camera.rotation.x, deg_to_rad(-40), deg_to_rad(60))
 
+func _process(delta: float) -> void:
+	if paused: return
+	
+	if raycast.is_colliding():
+		var coll = raycast.get_collider()
+		if coll is Door:
+			$Label.show()
+		else:
+			$Label.hide()
+	else:
+		$Label.hide()
+	
+	if Input.is_action_just_pressed("interact"):
+		if raycast.is_colliding():
+			var coll = raycast.get_collider()
+			if coll is Door:
+				coll.requested()
 
 func _physics_process(delta):
+	if paused: return
+	
 	if Input.is_action_just_pressed("pause"):
 		if Input.mouse_mode == Input.MOUSE_MODE_CAPTURED:
 			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)

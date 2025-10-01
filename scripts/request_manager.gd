@@ -15,6 +15,7 @@ var image_request:HTTPRequest
 func _ready():
 	# Create an HTTP request node and connect its completion signal.
 	api_request = HTTPRequest.new()
+	api_request.use_threads = true
 	api_request.name = "api_request"
 	add_child(api_request,true)
 	api_request.request_completed.connect(self._api_request_completed)

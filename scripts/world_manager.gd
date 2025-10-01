@@ -6,7 +6,7 @@ const Room = preload("res://scenes/Room.tscn")
 
 @export var texture_manager:TextureManager
 
-func gen_room(page:String,page_number:int):
+func gen_room(page:String,page_number:int,next_page:String):
 	var width:float
 	
 	width = texture_manager.images[page].images.size() * 1.5
@@ -16,12 +16,15 @@ func gen_room(page:String,page_number:int):
 	print("room_width ",width)
 	
 	var room = Room.instantiate()
+	room.page = page
+	room.next_page = next_page
+	
 	room.size = Vector3(width,10,10)
 	
 	print("room_pos ",images_aabb)
 	
 	var room_position = Vector3(images_aabb.size.x / 2, 10/2,10/2)
-	room.position = Vector3(room_position.x * page_number,room_position.y,room_position.z)
+	room.position = Vector3(18 * page_number,room_position.y,room_position.z)
 
 	room_container.add_child(room)
 	
