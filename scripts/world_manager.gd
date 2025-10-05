@@ -45,6 +45,20 @@ func spawn_image_frames(room_position:Vector3, room_width:float,images:Dictionar
 		meshinstance.mesh = QuadMesh.new()
 		meshinstance.material_override = material
 		meshinstance.position = start_spawn
+		
 		start_spawn += Vector3(1,0,0)
 		
+		#var scale = randi_range(1,2)
+		#meshinstance.scale = Vector3(scale,scale,scale)
+		
+		#if scale == 2:
+			#meshinstance.position.y += 1
+		meshinstance.position.y += 0.5
+		var wall_side = randi_range(0,1)
+		
+		if wall_side == 0:
+			meshinstance.position.z -= 5 - 0.1
+		if wall_side == 1:
+			meshinstance.position.z += 5 - 0.1
+			
 		$"../World/Images".add_child(meshinstance)

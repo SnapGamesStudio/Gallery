@@ -35,6 +35,9 @@ func _on_request_manager_fnished_page(page: String,page_number:int,next_page:Str
 	for door in get_tree().get_nodes_in_group("Door"):
 		if door.next_page == page:
 			door.queue_free() 
+			
+	$"../TextureRect".hide()
+	$"../loading page".hide()
 	
 	## starts a new page
 	if page_number == 1:
@@ -42,6 +45,7 @@ func _on_request_manager_fnished_page(page: String,page_number:int,next_page:Str
 		player.position = Vector3(18,5,5)
 		player_container.add_child(player)
 		$"../Label".hide()
+		
 		#request_manager.create_api_request(next_page)
 		pass
 

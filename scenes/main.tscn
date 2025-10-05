@@ -1,8 +1,9 @@
-[gd_scene load_steps=7 format=3 uid="uid://clim3jim0shlo"]
+[gd_scene load_steps=10 format=3 uid="uid://clim3jim0shlo"]
 
 [ext_resource type="Script" path="res://scripts/texture_manager.gd" id="1_7avxd"]
 [ext_resource type="Script" path="res://scripts/world_manager.gd" id="1_7iiup"]
 [ext_resource type="Script" path="res://scripts/request_manager.gd" id="1_knv1e"]
+[ext_resource type="Texture2D" uid="uid://csl2bext03u6" path="res://assets/Screenshot (864).png" id="4_qncj7"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_3xevv"]
 sky_horizon_color = Color(0.64625, 0.65575, 0.67075, 1)
@@ -14,9 +15,26 @@ sky_material = SubResource("ProceduralSkyMaterial_3xevv")
 [sub_resource type="Environment" id="Environment_s6so0"]
 background_mode = 2
 sky = SubResource("Sky_l5by6")
-tonemap_mode = 2
+tonemap_mode = 1
 ssao_enabled = true
 glow_enabled = true
+glow_bloom = 0.09
+glow_blend_mode = 1
+volumetric_fog_ambient_inject = 1.5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_td5fn"]
+bg_color = Color(0, 0, 0, 0.192157)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6ej3r"]
+bg_color = Color(0, 0, 0, 0.615686)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
 
 [node name="Main" type="Node"]
 
@@ -62,21 +80,64 @@ size = Vector3(100, 0.1, 100)
 [node name="CSGBox3D2" type="CSGBox3D" parent="World"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.146754, -3.14301)
 
+[node name="TextureRect" type="TextureRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("4_qncj7")
+
+[node name="loading page2" type="ProgressBar" parent="TextureRect"]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -23.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_styles/background = SubResource("StyleBoxFlat_td5fn")
+theme_override_styles/fill = SubResource("StyleBoxFlat_6ej3r")
+indeterminate = true
+editor_preview_indeterminate = true
+
 [node name="Label" type="Label" parent="."]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -61.5
-offset_top = -11.5
-offset_right = 61.5
-offset_bottom = 11.5
+offset_left = -386.0
+offset_top = -55.5
+offset_right = 386.0
+offset_bottom = 55.5
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_font_sizes/font_size = 81
 text = "loading world ..."
 uppercase = true
+
+[node name="loading page" type="ProgressBar" parent="."]
+visible = false
+offset_right = 160.0
+offset_bottom = 27.0
+theme_override_styles/background = SubResource("StyleBoxFlat_td5fn")
+theme_override_styles/fill = SubResource("StyleBoxFlat_6ej3r")
+indeterminate = true
+editor_preview_indeterminate = true
+
+[node name="Label" type="Label" parent="loading page"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_outline_color = Color(0, 0, 0, 1)
+text = "Loading Page"
+horizontal_alignment = 1
+vertical_alignment = 1
 
 [connection signal="create_page_dict" from="RequestManager" to="TextureManager" method="_on_request_manager_create_page_dict"]
 [connection signal="fnished_page" from="RequestManager" to="TextureManager" method="_on_request_manager_fnished_page"]

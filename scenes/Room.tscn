@@ -1,45 +1,76 @@
-[gd_scene load_steps=9 format=3 uid="uid://dt08kkdc3b48f"]
+[gd_scene load_steps=17 format=3 uid="uid://dt08kkdc3b48f"]
 
 [ext_resource type="Script" path="res://scripts/room.gd" id="1_p3ik2"]
+[ext_resource type="Texture2D" uid="uid://bqo464ewc6ooj" path="res://assets/WoodFloor051_1K-JPG/WoodFloor051_1K-JPG_Color.jpg" id="2_0pm4d"]
+[ext_resource type="Texture2D" uid="uid://b7g6v408usuhq" path="res://assets/WoodFloor051_1K-JPG/WoodFloor051_1K-JPG_AmbientOcclusion.jpg" id="3_27kmn"]
+[ext_resource type="Texture2D" uid="uid://dv1rc76kbpj4s" path="res://assets/WoodFloor051_1K-JPG/WoodFloor051_1K-JPG_NormalGL.jpg" id="4_t713w"]
+[ext_resource type="Texture2D" uid="uid://f5q0iisvfpi2" path="res://assets/WoodFloor051_1K-JPG/WoodFloor051_1K-JPG_Roughness.jpg" id="5_cw0vb"]
 
 [sub_resource type="Gradient" id="Gradient_1mur8"]
 colors = PackedColorArray(0.76662, 0.76662, 0.76662, 1, 1, 1, 1, 1)
 
 [sub_resource type="FastNoiseLite" id="FastNoiseLite_e2oej"]
 noise_type = 3
+frequency = 0.0723
 domain_warp_enabled = true
 
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_j5kfd"]
+width = 1080
+height = 1080
+seamless = true
+seamless_blend_skirt = 0.276
+normalize = false
 color_ramp = SubResource("Gradient_1mur8")
 noise = SubResource("FastNoiseLite_e2oej")
 
+[sub_resource type="Gradient" id="Gradient_a7k7q"]
+colors = PackedColorArray(0.76662, 0.76662, 0.76662, 1, 1, 1, 1, 1)
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_44yq3"]
+noise_type = 3
+frequency = 0.0723
+domain_warp_enabled = true
+
 [sub_resource type="NoiseTexture2D" id="NoiseTexture2D_26mrj"]
+width = 2160
+height = 2160
 as_normal_map = true
-bump_strength = 32.0
-color_ramp = SubResource("Gradient_1mur8")
-noise = SubResource("FastNoiseLite_e2oej")
+color_ramp = SubResource("Gradient_a7k7q")
+noise = SubResource("FastNoiseLite_44yq3")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_kjaj5"]
 albedo_texture = SubResource("NoiseTexture2D_j5kfd")
 normal_enabled = true
 normal_texture = SubResource("NoiseTexture2D_26mrj")
 
+[sub_resource type="Gradient" id="Gradient_dy1cf"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_6pwdt"]
+color_ramp = SubResource("Gradient_dy1cf")
+noise = SubResource("FastNoiseLite_44yq3")
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nptu6"]
-albedo_texture = SubResource("NoiseTexture2D_j5kfd")
+roughness_texture = SubResource("NoiseTexture2D_6pwdt")
 normal_enabled = true
+normal_scale = 0.95
 normal_texture = SubResource("NoiseTexture2D_26mrj")
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_c2kb2"]
-cull_mode = 2
-albedo_texture = SubResource("NoiseTexture2D_j5kfd")
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_g2yfn"]
+albedo_texture = ExtResource("2_0pm4d")
+roughness_texture = ExtResource("5_cw0vb")
 normal_enabled = true
-normal_texture = SubResource("NoiseTexture2D_26mrj")
+normal_texture = ExtResource("4_t713w")
+ao_enabled = true
+ao_texture = ExtResource("3_27kmn")
+uv1_scale = Vector3(0.4, 0.4, 0.4)
+uv1_triplanar = true
 
 [node name="Room" type="Node3D"]
 script = ExtResource("1_p3ik2")
 
 [node name="wall" type="CSGBox3D" parent="."]
 use_collision = true
+size = Vector3(18, 10, 10)
 material = SubResource("StandardMaterial3D_kjaj5")
 
 [node name="inside" type="CSGBox3D" parent="wall"]
@@ -51,10 +82,56 @@ material = SubResource("StandardMaterial3D_nptu6")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 operation = 2
 size = Vector3(2, 2.8, 2)
-material = SubResource("StandardMaterial3D_c2kb2")
+material = SubResource("StandardMaterial3D_nptu6")
 
 [node name="right_door" type="CSGBox3D" parent="wall"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
 operation = 2
 size = Vector3(2, 2.8, 2)
-material = SubResource("StandardMaterial3D_c2kb2")
+material = SubResource("StandardMaterial3D_nptu6")
+
+[node name="Roof" type="Node3D" parent="wall"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.98596, 0)
+
+[node name="CSGCylinder3D" type="CSGCylinder3D" parent="wall/Roof"]
+transform = Transform3D(-4.37114e-08, -1, 0, -4.37114e-08, 1.91069e-15, -1, 1, -4.37114e-08, -4.37114e-08, -1.58819e-22, -4.9888, 4.44089e-15)
+radius = 5.0
+height = 18.0
+sides = 64
+
+[node name="roof cutout1" type="CSGCylinder3D" parent="wall/Roof/CSGCylinder3D"]
+operation = 2
+radius = 4.9
+height = 18.0
+sides = 64
+material = SubResource("StandardMaterial3D_g2yfn")
+
+[node name="roof cutout2" type="CSGBox3D" parent="wall/Roof/CSGCylinder3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.42109e-14, 4.23516e-22, 2.84415)
+operation = 2
+size = Vector3(18, 18, 5.67682)
+
+[node name="Lights" type="Node3D" parent="wall"]
+
+[node name="SpotLight3D" type="OmniLight3D" parent="wall/Lights"]
+transform = Transform3D(-4.37114e-08, -1, -4.37114e-08, 0, -4.37114e-08, 1, -1, 4.37114e-08, 1.91069e-15, -6, 4.346, 0)
+shadow_enabled = true
+
+[node name="SpotLight3D2" type="OmniLight3D" parent="wall/Lights"]
+transform = Transform3D(-4.37114e-08, -1, -4.37114e-08, 0, -4.37114e-08, 1, -1, 4.37114e-08, 1.91069e-15, -9.53674e-07, 4.34614, 0)
+visible = false
+shadow_enabled = true
+
+[node name="SpotLight3D3" type="OmniLight3D" parent="wall/Lights"]
+transform = Transform3D(-4.37114e-08, -1, -4.37114e-08, 0, -4.37114e-08, 1, -1, 4.37114e-08, 1.91069e-15, 6, 4.346, 0)
+shadow_enabled = true
+omni_range = 11.795
+
+[node name="Node3D" type="Node3D" parent="wall"]
+
+[node name="CSGBox3D" type="CSGBox3D" parent="wall/Node3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.021, -5, 0.018)
+size = Vector3(18, 0.11, 10)
+material = SubResource("StandardMaterial3D_g2yfn")
+
+[node name="info page" type="Node3D" parent="."]

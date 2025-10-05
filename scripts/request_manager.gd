@@ -46,6 +46,7 @@ func _api_request_completed(result, response_code, headers, body):
 	for image in response.data: ## the images
 		print("image ",image.id)
 		
+		print(response.config)
 		var iiif_url = response.config.iiif_url
 		if image.image_id:
 			var final_url:String = str(iiif_url,"/" + image.image_id,"/full/843,/0/default.jpg")
@@ -72,6 +73,8 @@ func _image_request_completed(result,response_code,headers,body):
 
 func create_api_request(url:String):
 	var error = api_request.request(url)
-
+	
 	if error != OK:
 		push_error("An error occurred in the HTTP request.")
+	else:
+		$"../loading page".show()
